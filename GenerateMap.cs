@@ -55,7 +55,7 @@ public class GenerateMap : MonoBehaviour
             
         }
 
-        print(HorizontalRoads.Length);
+        // print(HorizontalRoads.Length);
         generateRoads();
         generateHotSpots();
         generatePassengers();
@@ -87,16 +87,22 @@ public class GenerateMap : MonoBehaviour
     }
 
      void generatePassengers() {
-        
-        for (int i = 0; i < HorizontalRoads.Length; i++)
-        {
-            map[HorizontalRoads[i], Random.Range(5,sizeX - 5)] = 4;
-        }
 
-        for (int i = 0; i < HorizontalRoads.Length; i++)
-        {
-            map[Random.Range(5,sizeX - 5), HorizontalRoads[i]] = 4;
-        }
+        //Need the number of passengers
+        int numPass = Mathf.Clamp(HorizontalRoads.Length, (int)(Mathf.Ceil(sizeX/20)), sizeX/10);
+        
+        print(numPass); 
+
+        
+        // for (int i = 0; i < numPass; i++)
+        // {
+        //     map[HorizontalRoads[i], Random.Range(5,sizeX - 5)] = 4;
+        // }
+
+        // for (int i = 0; i < numPass; i++)
+        // {
+        //     map[Random.Range(5,sizeX - 5), HorizontalRoads[i]] = 4;
+        // }
     }
 
     int GenerateXRoadSimple() {
@@ -140,7 +146,7 @@ public class GenerateMap : MonoBehaviour
         // //Generating Vertical Roads
         for (int i = 0; i < VerticalRoads.Length; i++) {
             int col = GenerateYRoadSimple();
-            print(col);
+            // print(col);
             VerticalRoads[i] = col;
             // int col = Random.Range(0,4);
             for (int j = 3; j < sizeY - 3; j++) {
