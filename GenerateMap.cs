@@ -5,8 +5,8 @@ using System.IO;
 
 public class GenerateMap : MonoBehaviour
 {
-    public int sizeX = 10;
-    public int sizeY = 10;
+    public int sizeX = 50;
+    public int sizeY = 50;
     public int[,] map = new int[50,50];
 
     
@@ -33,60 +33,79 @@ public class GenerateMap : MonoBehaviour
 
     // private int[] validChoices = new int[50];
     List<int> validChoices = new List<int>();
-
+    List<int> temp = new List<int>();
     
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        int[] choices = new int[5] {8, 16, 24, 32, 40};
-        foreach (int i in choices) {
-            validChoices.Add(i);
-        }
-        
-        for (int i = 0; i < 50; i++) {
+    public void GenerateWorld() {
+        int[,] newmap = new int[sizeX, sizeY];
+        map = newmap;
+        HorizontalRoads = new int[Random.Range(3, sizeX/10)];
+        VerticalRoads = new int[Random.Range(2, sizeX/10)];
+     
+      
+        for (int i = 0; i < sizeX; i++) {
             
-            for (int j = 0; j < 50; j++) {
+            for (int j = 0; j < sizeY; j++) {
                 map[i,j] = 1;
+                
             }
+            if (i != 0 && i % 8 == 0 && sizeX - i > 8) {
+                    validChoices.Add(i);
+                    temp.Add(i);
+            }
+            
         }
+
+        print(HorizontalRoads.Length);
         generateRoads();
         generateHotSpots();
         generatePassengers();
         CreateMap();
         print();
+
+        
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        GenerateWorld();
     }
     
     void generateHotSpots() {
         
         int row = Random.Range(0,100);
         int col = Random.Range(0,100);
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < HorizontalRoads.Length; i++)
         {
-            map[HorizontalRoads[i], Random.Range(5,41)] = 2;
+            map[HorizontalRoads[i], Random.Range(5,sizeX - 5)] = 2;
         }
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < HorizontalRoads.Length; i++)
         {
-            map[Random.Range(5,41), HorizontalRoads[i]] = 2;
+            map[Random.Range(5,sizeX - 5), HorizontalRoads[i]] = 2;
         }
     }
 
      void generatePassengers() {
         
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < HorizontalRoads.Length; i++)
         {
-            map[HorizontalRoads[i], Random.Range(5,41)] = 4;
+            map[HorizontalRoads[i], Random.Range(5,sizeX - 5)] = 4;
         }
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < HorizontalRoads.Length; i++)
         {
-            map[Random.Range(5,41), HorizontalRoads[i]] = 4;
+            map[Random.Range(5,sizeX - 5), HorizontalRoads[i]] = 4;
         }
     }
 
-    int GenerateRoadSimple() {
+    int GenerateXRoadSimple() {
+        int ans = validChoices[Random.Range(0, validChoices.Count)];
+        validChoices.Remove(ans);
+        return ans;
+    }
+
+    int GenerateYRoadSimple() {
         int ans = validChoices[Random.Range(0, validChoices.Count)];
         validChoices.Remove(ans);
         return ans;
@@ -96,14 +115,14 @@ public class GenerateMap : MonoBehaviour
 
     //How man
     void generateRoads() {
-        int[] rowRoads = new int[4];
+        
         //Generating Horizontal Rows 
-        for (int i = 0; i < 4; i++) {
-            int row = GenerateRoadSimple(); 
+        for (int i = 0; i < HorizontalRoads.Length; i++) {
+            int row = GenerateXRoadSimple(); 
             Debug.Log("This is the road" + row.ToString());
-            rowRoads[i] = row;
+            HorizontalRoads[i] = row;
             
-            for (int j = 3; j < 46; j++) {
+            for (int j = 3; j < sizeX - 3; j++) {
                 if (row != -1) {
                     map[j,row] = 3;
                     map[j,row+1] = 3;
@@ -115,17 +134,21 @@ public class GenerateMap : MonoBehaviour
         
         }
 
-        HorizontalRoads = rowRoads;
+        validChoices = temp;
+
         
         // //Generating Vertical Roads
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < VerticalRoads.Length; i++) {
+            int col = GenerateYRoadSimple();
+            print(col);
+            VerticalRoads[i] = col;
             // int col = Random.Range(0,4);
-            for (int j = 5; j < 41; j++) {
-                if (map[rowRoads[i], j] == 1) {
-                    map[rowRoads[i],j ] = 3;
-                    map[rowRoads[i]+1,j ] = 3;
-                    map[rowRoads[i]-1,j ] = 3;
-                    map[rowRoads[i]+2,j ] = 3;
+            for (int j = 3; j < sizeY - 3; j++) {
+                if (map[col, j] == 1) {
+                    map[col,j ] = 3;
+                    map[col+1,j ] = 3;
+                    map[col-1,j ] = 3;
+                    map[col+2,j ] = 3;
                 }
             }
         }
@@ -150,8 +173,8 @@ public class GenerateMap : MonoBehaviour
     
     void CreateMap() {
         Sprite tileSprite = null; 
-        for (int i = 0; i < 50; i++) {
-                for (int j = 0; j < 50; j++) { 
+        for (int i = 0; i < sizeX; i++) {
+                for (int j = 0; j < sizeY; j++) { 
                     if (map[i,j] == 1) {
                         tileSprite = forest;
                     }
